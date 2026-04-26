@@ -22,26 +22,7 @@ map("n", "<leader>cp", "<cmd>CMakeSelectBuildPreset<cr>", { desc = "CMake Select
 map("n", "<leader>ba", ":%bd<CR>", { desc = "Close all buffers" })
 
 map("n", "<leader>bo", ":%bd|e#|bd#<CR>", { desc = "Close all buffers except current" })
-map("n", "<leader>df", function()
-  require("neogen").generate()
-end, { desc = "Neogen: Generate docs" })
-map("i", "<Tab>", function()
-  if require("neogen").jumpable() then
-    require("neogen").jump_next()
-  else
-    return "<Tab>"
-  end
-end, { expr = true, desc = "Neogen: Jump next field" })
-
-map("i", "<S-Tab>", function()
-  if require("neogen").jumpable(1) then
-    require("neogen").jump_prev()
-  else
-    return "<S-Tab>"
-  end
-end, { expr = true, desc = "Neogen: Jump prev field" })
-
-map("n", "K", "<cmd>Lspsaga hover_doc<CR>", { desc = "LSP: Hover Docs (Saga)" })
+-- map("n", "K", "<cmd>Lspsaga hover_doc<CR>", { desc = "LSP: Hover Docs (Saga)" })
 
 
 -- Normal and Visual mode mappings
@@ -53,6 +34,17 @@ vim.keymap.set({ "n", "v" }, "<leader>ai", "<cmd>CodeCompanion<cr>", { desc = "I
 vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { desc = "Add selection to AI Chat" })
 
 vim.keymap.set({ "n", "v" }, "<leader>fr", "<cmd>GrugFarWithin<cr>", { desc = "Find & Replace" })
+map("n", "<leader>dx", "<cmd> Dox <cr>", { desc = "Doxygen: Generate  func doc" })
+map("n", "<leader>da", "<cmd> DoxAuthor <cr>", { desc = "Doxygen: Generate file doc" })
+map("n", "<leader>dl", "<cmd> DoxLic <cr>", { desc = "Doxygen: license doc" })
 
+local ls = require("luasnip")
+vim.keymap.set({"i", "s"}, "<Tab>", function() ls.jump(1) end, {silent = true})
+vim.keymap.set({"i", "s"}, "<S-Tab>", function() ls.jump(-1) end, {silent = true})
+
+map("n", "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", { desc = "Switch Source/Header"})
+map("n", "<leader>ct", "<cmd>ClangdTypeHierarchy<cr>", { desc ="Type Hierarchy"})
+map("n", "<leader>ci", "<cmd>ClangdSymbolInfo<cr>", { desc ="Symbol Info"})
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP Code Actions" })
 
 

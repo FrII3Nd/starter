@@ -32,11 +32,39 @@ vim.lsp.config("clangd", {
     "--clang-tidy",
     "--header-insertion=iwyu",
     "--header-insertion-decorators",
+    "--header-insertion=never"
   },
   filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
-  on_attach = on_attach,
+  on_attach = function(client, bufnr)
+    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+    require("clangd_extensions").setup({
+        ast = {
+            role_icons = {
+                type = "",
+                declaration = "",
+                expression = "",
+                specifier = "",
+                statement = "",
+                ["template argument"] = "",
+            },
+            kind_icons = {
+                Compound = "",
+                Recovery = "",
+                TranslationUnit = "",
+                PackExpansion = "",
+                TemplateTypeParm = "",
+                TemplateTemplateParm = "",
+                TemplateParamObject = "",
+            },
+        },
+    })
+  end,
   on_init = on_init,
-  capabilities = capabilities,
+  capabilities = (function()
+    local caps = capabilities
+    caps.textDocument.hover.contentFormat = { "markdown", "plaintext" }
+    return caps
+  end)(),
 })
 
 vim.g.clang_format_style = "file"
@@ -50,3 +78,4 @@ vim.lsp.enable "cmake"
 vim.api.nvim_create_user_command("Format", function(args)
   require("conform").format { args = args.fargs, async = args.bang }
 end, { nargs = "*", bang = true, desc = "Format buffer using conform" })
+
