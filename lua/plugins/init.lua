@@ -177,9 +177,15 @@ return {
       },
     },
   },
-  {
+{
   "p00f/clangd_extensions.nvim",
-  lazy = true,
-  config = function() end,
-},
+  config = function()
+    require("clangd_extensions").setup({
+      symbol_info = {
+        border = "rounded",  -- Optional styling
+        -- Add height/width here if supported, or hook vim.lsp.util.open_floating_preview
+      },
+    })
+  end,
+}
 }

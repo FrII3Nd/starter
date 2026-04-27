@@ -12,22 +12,24 @@ local function setup_smart_compile_commands()
   end
 end
 
--- Вызываем функцию при старте
 setup_smart_compile_commands()
 local on_attach = require("nvchad.configs.lspconfig").on_attach
 local on_init = require("nvchad.configs.lspconfig").on_init
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.foldingRange = {
-  dynamicRegistration = false,
+  dynamicRegistration = true,
   lineFoldingOnly = true,
 }
+
 vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+
 vim.lsp.config("clangd", {
   cmd = {
     "clangd",
     "--offset-encoding=utf-16",
-    "--query-driver=/opt/esp/tools/**/bin/*-gcc",
+    "--query-driver=/opt/Xilinx/Vitis/2024.2/gnu/aarch64/**/**/**/*g++,/opt/Xilinx/Vitis/2024.2/gnu/aarch32/**/*g++,/opt/Xilinx/Vitis/2024.2/gnu/riscv/**/**/**/*g++,/opt/esp/tools/**/bin/*-gcc",
     "--background-index",
     "--clang-tidy",
     "--header-insertion=iwyu",

@@ -22,8 +22,6 @@ map("n", "<leader>cp", "<cmd>CMakeSelectBuildPreset<cr>", { desc = "CMake Select
 map("n", "<leader>ba", ":%bd<CR>", { desc = "Close all buffers" })
 
 map("n", "<leader>bo", ":%bd|e#|bd#<CR>", { desc = "Close all buffers except current" })
--- map("n", "K", "<cmd>Lspsaga hover_doc<CR>", { desc = "LSP: Hover Docs (Saga)" })
-
 
 -- Normal and Visual mode mappings
 vim.keymap.set({ "n", "v" }, "<leader>ac", "<cmd>CodeCompanionChat Toggle<cr>", { desc = "Toggle AI Chat" })
