@@ -18,7 +18,7 @@ map("n", "<leader>cb", "<cmd>CMakeBuild<cr>", { desc = "CMake Build" })
 map("n", "<leader>cc", "<cmd>CMakeClean<cr>", { desc = "CMake Clean" })
 map("n", "<leader>ct", "<cmd>CMakeSelectBuildTarget<cr>", { desc = "CMake Select Target" })
 map("n", "<leader>cp", "<cmd>CMakeSelectBuildPreset<cr>", { desc = "CMake Select Build Preset" })
-
+map("n", "<leader>cr", "<cmd>CMakeRun<cr>", { desc = "CMake Run" })
 map("n", "<leader>ba", ":%bd<CR>", { desc = "Close all buffers" })
 
 map("n", "<leader>bo", ":%bd|e#|bd#<CR>", { desc = "Close all buffers except current" })

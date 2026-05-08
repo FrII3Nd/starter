@@ -5,10 +5,10 @@
 ---@type ChadrcConfig
 local M = {}
 M.ui = {
-  theme = "default-dark", 
+  theme = "onenord", 
 }
 M.base46 = {
-	theme = "default-dark",
+	theme = "onenord",
 
 	-- hl_override = {
 	-- 	Comment = { italic = true },

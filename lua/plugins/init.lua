@@ -187,5 +187,41 @@ return {
       },
     })
   end,
-}
-}
+},
+  {
+  "mfussenegger/nvim-dap",
+  dependencies = {
+    "jay-babu/mason-nvim-dap.nvim",
+    "igorlfs/nvim-dap-view",
+  },
+  config = function()
+    local dap = require("dap")
+    local dap_view = require("dap-view")
+
+    dap_view.setup()
+
+    -- [ВАШ КОД СЮДА]
+    dap.configurations.cpp = {
+      {
+        name = "LLDB: Launch CMake Target",
+        type = "codelldb",
+        request = "launch",
+        program = function()
+          local path = vim.fn.getcwd() .. '/build/'
+          return vim.fn.input('Path to executable: ', path, 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+        console = 'integratedTerminal',
+      },
+    }
+    dap.configurations.c = dap.configurations.cpp
+    -- [КОНЕЦ ВАШЕГО КОДА]
+
+    -- Не забудьте про листенеры, чтобы nvim-dap-view открывался сам
+    dap.listeners.after.event_initialized["dapui_config"] = function()
+      dap_view.open()
+    end
+  end,
+}}
+
