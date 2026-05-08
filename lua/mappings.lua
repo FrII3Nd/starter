@@ -36,13 +36,27 @@ map("n", "<leader>dx", "<cmd> Dox <cr>", { desc = "Doxygen: Generate  func doc" 
 map("n", "<leader>da", "<cmd> DoxAuthor <cr>", { desc = "Doxygen: Generate file doc" })
 map("n", "<leader>dl", "<cmd> DoxLic <cr>", { desc = "Doxygen: license doc" })
 
-local ls = require("luasnip")
-vim.keymap.set({"i", "s"}, "<Tab>", function() ls.jump(1) end, {silent = true})
-vim.keymap.set({"i", "s"}, "<S-Tab>", function() ls.jump(-1) end, {silent = true})
+-- local ls = require("luasnip")
+-- vim.keymap.set({"i", "s"}, "<Tab>", function() ls.jump(1) end, {silent = true})
+-- vim.keymap.set({"i", "s"}, "<S-Tab>", function() ls.jump(-1) end, {silent = true})
 
 map("n", "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", { desc = "Switch Source/Header"})
 map("n", "<leader>ct", "<cmd>ClangdTypeHierarchy<cr>", { desc ="Type Hierarchy"})
 map("n", "<leader>ci", "<cmd>ClangdSymbolInfo<cr>", { desc ="Symbol Info"})
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP Code Actions" })
 
+-- DAP (Debugger) Mappings
+map("n", "<F5>", "<cmd>DapContinue<cr>", { desc = "DAP Continue / Start" })
+map("n", "<F10>", "<cmd>DapStepOver<cr>", { desc = "DAP Step Over" })
+map("n", "<F11>", "<cmd>DapStepInto<cr>", { desc = "DAP Step Into" })
+map("n", "<F12>", "<cmd>DapStepOut<cr>", { desc = "DAP Step Out" })
+map("n", "<leader>db", "<cmd>DapToggleBreakpoint<cr>", { desc = "DAP Toggle Breakpoint" })
+map("n", "<leader>dc", "<cmd>DapTerminate<cr>", { desc = "DAP Terminate" })
+map("n", "<leader>cd", "<cmd>CMakeDebug<cr>", { desc = "CMake Debug (Build & Debug)" })
+map("n", "<leader>dq", function()
+  require("dap-view").close()
+  require("dap").terminate()
+end, { desc = "DAP Close UI & Terminate" })
 
+-- Ручной вызов сигнатуры (без кражи фокуса)
+map("n", "<C-k>", "<cmd>lua manual_signature_help()<cr>", { desc = "Manual Signature Help" })

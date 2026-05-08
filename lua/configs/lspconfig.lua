@@ -1,5 +1,10 @@
 local configs = require "nvchad.configs.lspconfig"
 
+-- Function to manually trigger signature help (captured by noice if configured)
+function _G.manual_signature_help()
+  vim.lsp.buf.signature_help()
+end
+
 local function setup_smart_compile_commands()
   local root = vim.fn.getcwd()
   local handle = io.popen("find " .. root .. "/cmake-build-* -name compile_commands.json 2>/dev/null | head -n 1")
@@ -26,6 +31,10 @@ vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
 
 vim.lsp.config("clangd", {
+  handlers = {
+    -- Disable default signature help popup
+    ["textDocument/signatureHelp"] = function() end,
+  },
   cmd = {
     "clangd",
     "--offset-encoding=utf-16",

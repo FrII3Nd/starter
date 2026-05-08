@@ -1,38 +1,283 @@
 {
-  "Header Guard (Auto)": {
+  "Header File (Pragma)": {
     "prefix": "once",
     "body": [
-      "#ifndef ${TM_FILENAME_BASE/([a-z])|([A-Z])|([^a-zA-Z0-9])/${1:+$1}${2:/upcase$2}${3:+_}/g}_HPP_",
-      "#define ${TM_FILENAME_BASE/([a-z])|([A-Z])|([^a-zA-Z0-9])/${1:+$1}${2:/upcase$2}${3:+_}/g}_HPP_",
+      "#pragma once",
       "",
-      "$0",
+      "${1:// Includes}",
       "",
-      "#endif // ${TM_FILENAME_BASE/([a-z])|([A-Z])|([^a-zA-Z0-9])/${1:+$1}${2:/upcase$2}${3:+_}/g}_HPP_"
+      "${2:// Code}",
+      "$0"
     ],
-    "description": "Header Guard"
+    "description": "Header file with #pragma once"
   },
 
-  "Class Template": {
+  "Header Guard (Classic)": {
+    "prefix": "guard",
+    "body": [
+      "#ifndef ${TM_FILENAME_BASE/(.*)/${1:/upcase}/g}_HPP",
+      "#define ${TM_FILENAME_BASE/(.*)/${1:/upcase}/g}_HPP",
+      "#endif // ${TM_FILENAME_BASE/(.*)/${1:/upcase}/g}_HPP",
+      "$0"
+    ],
+    "description": "Classic header guard"
+  },
+
+  "Main Function": {
+    "prefix": "main",
+    "body": [
+      "int main(int argc, char* argv[]) {",
+      "    $0",
+      "    return 0;",
+      "}"
+    ],
+    "description": "Main function"
+  },
+
+  "Class Definition": {
     "prefix": "class",
     "body": [
-      "class ${1:Name} {",
+      "class ${1:ClassName} {",
       "public:",
-      "\t${1:Name}($2);",
+      "    ${1:ClassName}();",
       "",
       "private:",
-      "\t$0",
-      "};"
+      "};",
+      ""
     ],
-    "description": "Class base structure"
+    "description": "Class with constructor/destructor"
   },
 
-  "Range-based for loop": {
+  "Struct Definition": {
+    "prefix": "struct",
+    "body": [
+      "struct ${1:Name} {",
+      "    ${2:// members}",
+      "};$0"
+    ],
+    "description": "Struct definition"
+  },
+
+  "Namespace": {
+    "prefix": "ns",
+    "body": [
+      "namespace ${1:name} {",
+      "",
+      "${2:// code}",
+      "",
+      "} // namespace $1",
+      "$0"
+    ],
+    "description": "Namespace block"
+  },
+
+  "For Loop": {
+    "prefix": "for",
+    "body": [
+      "for (int ${1:i} = 0; ${1:i} < ${2:n}; ++${1:i}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "Standard for loop"
+  },
+
+  "Range-based For Loop": {
     "prefix": "fore",
     "body": [
       "for (const auto& ${1:item} : ${2:container}) {",
-      "\t$0",
+      "    $0",
       "}"
     ],
-    "description": "For loop in container"
+    "description": "Range-based for loop"
+  },
+
+  "While Loop": {
+    "prefix": "while",
+    "body": [
+      "while (${1:condition}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "While loop"
+  },
+
+  "If-Else": {
+    "prefix": "if",
+    "body": [
+      "if (${1:condition}) {",
+      "    $0",
+      "} else {",
+      "    ",
+      "}"
+    ],
+    "description": "If-else block"
+  },
+
+  "Switch-Case": {
+    "prefix": "switch",
+    "body": [
+      "switch (${1:expression}) {",
+      "    case ${2:value}:",
+      "        $0",
+      "        break;",
+      "    default:",
+      "        break;",
+      "}"
+    ],
+    "description": "Switch-case block"
+  },
+
+  "Try-Catch": {
+    "prefix": "try",
+    "body": [
+      "try {",
+      "    $0",
+      "} catch (const ${1:std::exception}& e) {",
+      "    std::cerr << e.what() << std::endl;",
+      "}"
+    ],
+    "description": "Try-catch block"
+  },
+
+  "Lambda Function": {
+    "prefix": "lambda",
+    "body": [
+      "[${1:&}](${2:args}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "Lambda function"
+  },
+
+  "Auto Variable": {
+    "prefix": "auto",
+    "body": [
+      "auto ${1:var} = ${2:value};$0"
+    ],
+    "description": "Auto variable"
+  },
+
+  "Shared Pointer": {
+    "prefix": "shared",
+    "body": [
+      "std::shared_ptr<${1:Type}> ${2:ptr} = std::make_shared<${1:Type}>(${3:args});$0"
+    ],
+    "description": "Shared pointer with make_shared"
+  },
+
+  "Unique Pointer": {
+    "prefix": "unique",
+    "body": [
+      "std::unique_ptr<${1:Type}> ${2:ptr} = std::make_unique<${1:Type}>(${3:args});$0"
+    ],
+    "description": "Unique pointer with make_unique"
+  },
+
+  "Vector Include + Usage": {
+    "prefix": "vec",
+    "body": [
+      "#include <vector>",
+      "",
+      "std::vector<${1:int}> ${2:vec};",
+      "${3:// ${2:vec}.push_back(${4:value});}",
+      "$0"
+    ],
+    "description": "Vector with include"
+  },
+
+  "Map Include + Usage": {
+    "prefix": "map",
+    "body": [
+      "#include <map>",
+      "",
+      "std::map<${1:key_type}, ${2:value_type}> ${3:map};",
+      "$0"
+    ],
+    "description": "Map with include"
+  },
+
+  "Smart Enum (Enum Class)": {
+    "prefix": "enum",
+    "body": [
+      "enum class ${1:Name} {",
+      "    ${2:Value1},",
+      "    ${3:Value2},",
+      "};$0"
+    ],
+    "description": "Enum class (scoped enum)"
+  },
+
+  "Template Function": {
+    "prefix": "tempf",
+    "body": [
+      "template<typename ${1:T}>",
+      "${2:void} ${3:function_name}(${1:T} ${4:arg}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "Template function"
+  },
+
+  "Template Class": {
+    "prefix": "tempc",
+    "body": [
+      "template<typename ${1:T}>",
+      "class ${2:ClassName} {",
+      "public:",
+      "    ${2:ClassName}(${1:T} ${3:arg});",
+      "private:",
+      "    ${1:T} ${4:member};",
+      "};",
+      "",
+      "template<typename ${1:T}>",
+      "${2:ClassName}<${1:T}>::${2:ClassName}(${1:T} ${3:arg})",
+      "    : ${4:member}(${3:arg}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "Template class"
+  },
+
+  "Include Guard (Simple)": {
+    "prefix": "#inc",
+    "body": [
+      "#include <${1:iostream}>",
+      "$0"
+    ],
+    "description": "Include statement"
+  },
+
+  "Const Reference Parameter": {
+    "prefix": "cref",
+    "body": [
+      "const ${1:std::string}& ${2:param}$0"
+    ],
+    "description": "Const reference parameter"
+  },
+
+  "Getter/Setter": {
+    "prefix": "getset",
+    "body": [
+      "${1:Type} get_${2:name}() const { return ${2:name}_; }",
+      "void set_${2:name}(${1:Type} ${3:value}) { ${2:name}_ = ${3:value}; }",
+      "$0"
+    ],
+    "description": "Getter and setter methods"
+  },
+
+  "Std Cout": {
+    "prefix": "cout",
+    "body": [
+      "std::cout << ${1:message} << std::endl;$0"
+    ],
+    "description": "Std cout with endl"
+  },
+
+  "Static Cast": {
+    "prefix": "static_cast",
+    "body": [
+      "static_cast<${1:Type}>(${2:expression})$0"
+    ],
+    "description": "Static cast"
   }
 }

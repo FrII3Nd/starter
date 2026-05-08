@@ -163,7 +163,12 @@ return {
     opts = {
       lsp = {
         hover = { enabled = true },
-        signature = { enabled = true },
+        signature = { 
+          enabled = true,      -- Enable noice to capture signature help
+          auto_open = {
+            enabled = false,
+          }, -- Don't open automatically on typing
+        },
         override = {
           ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
           ["vim.lsp.util.set_autocmds_to_reply_to_context"] = true,
@@ -177,51 +182,104 @@ return {
       },
     },
   },
-{
-  "p00f/clangd_extensions.nvim",
-  config = function()
-    require("clangd_extensions").setup({
-      symbol_info = {
-        border = "rounded",  -- Optional styling
-        -- Add height/width here if supported, or hook vim.lsp.util.open_floating_preview
-      },
-    })
-  end,
-},
   {
-  "mfussenegger/nvim-dap",
-  dependencies = {
-    "jay-babu/mason-nvim-dap.nvim",
-    "igorlfs/nvim-dap-view",
+    "p00f/clangd_extensions.nvim",
+    config = function()
+      require("clangd_extensions").setup({
+        symbol_info = {
+          border = "rounded",  -- Optional styling
+        },
+      })
+    end,
   },
-  config = function()
-    local dap = require("dap")
-    local dap_view = require("dap-view")
-
-    dap_view.setup()
-
-    -- [ВАШ КОД СЮДА]
-    dap.configurations.cpp = {
-      {
-        name = "LLDB: Launch CMake Target",
-        type = "codelldb",
-        request = "launch",
-        program = function()
-          local path = vim.fn.getcwd() .. '/build/'
-          return vim.fn.input('Path to executable: ', path, 'file')
+  -- Mason DAP для автоматической установки codelldb
+  {
+    "jay-babu/mason-nvim-dap.nvim",
+    dependencies = { "williamboman/mason.nvim" },
+    opts = {
+      automatic_installation = true,
+      handlers = {
+        function(config)
+          require("mason-nvim-dap").default_setup(config)
         end,
-        cwd = '${workspaceFolder}',
-        stopOnEntry = false,
-        console = 'integratedTerminal',
+        codelldb = function(config)
+          config.adapters = {
+            type = "server",
+            host = "127.0.0.1",
+            port = "${port}",
+            executable = {
+              command = "codelldb",
+              args = { "--port", "${port}" },
+            },
+          }
+          require("mason-nvim-dap").default_setup(config)
+        end,
       },
-    }
-    dap.configurations.c = dap.configurations.cpp
-    -- [КОНЕЦ ВАШЕГО КОДА]
+    },
+  },
+  -- NVIM DAP с автоматическим получением цели из CMake
+  {
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      "jay-babu/mason-nvim-dap.nvim",
+      "igorlfs/nvim-dap-view",
+    },
+    config = function()
+      local dap = require("dap")
+      local dap_view = require("dap-view")
 
-    -- Не забудьте про листенеры, чтобы nvim-dap-view открывался сам
-    dap.listeners.after.event_initialized["dapui_config"] = function()
-      dap_view.open()
-    end
-  end,
-}}
+      dap_view.setup()
 
+      -- Автоматическое открытие/закрытие интерфейса отладки
+      dap.listeners.after.event_initialized["dapui_config"] = function()
+        dap_view.open()
+      end
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dap_view.close()
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dap_view.close()
+      end
+
+      -- Настройка конфигурации для C++
+      dap.configurations.cpp = {
+        {
+          name = "Launch CMake Target (codelldb)",
+          type = "codelldb",
+          request = "launch",
+          -- Автоматическое получение пути к исполняемому файлу из cmake-tools
+          program = function()
+            local ok, cmake = pcall(require, "cmake-tools")
+            if not ok then
+              print("cmake-tools not found")
+              return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/build/", "file")
+            end
+            local target_name = cmake.get_build_target()
+            local build_dir = cmake.get_build_directory()
+
+            if not target_name or target_name == "" then
+              print("CMake: Target not selected! Use :CMakeSelectTarget")
+              return vim.fn.input("Path to executable (fallback): ", vim.fn.getcwd() .. "/build/", "file")
+            end
+
+            -- Путь обычно: build_dir/<target_name>
+            local exec_path = build_dir .. "/" .. target_name
+            
+            -- Проверка существования файла
+            if vim.fn.executable(exec_path) == 0 then
+              print("Executable not found at: " .. exec_path)
+              print("Make sure you built the project with CMake (Debug mode).")
+              return vim.fn.input("Path to executable (fallback): ", build_dir .. "/", "file")
+            end
+            
+            return exec_path
+          end,
+          cwd = "${workspaceFolder}",
+          stopOnEntry = false,
+          console = "integratedTerminal",
+        },
+      }
+      dap.configurations.c = dap.configurations.cpp
+    end,
+  },
+}
